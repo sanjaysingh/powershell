@@ -1,4 +1,5 @@
-param([switch]$Elevated)
+ 
+ param([switch]$Elevated)
 
 function Test-Admin {
   $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -17,6 +18,9 @@ if ((Test-Admin) -eq $false)  {
 exit
 }
 
-'running with full privileges'
-
-Enable-WindowsOptionalFeature -Online -FeatureName IIS-ApplicationDevelopment,IIS-BasicAuthentication,IIS-ClientCertificateMappingAuthentication,IIS-CommonHttpFeatures,IIS-CustomLogging,IIS-DefaultDocument,IIS-DirectoryBrowsing,IIS-FTPExtensibility,IIS-FTPServer,IIS-FTPSvc,IIS-HealthAndDiagnostics,IIS-HostableWebCore,IIS-HttpCompressionDynamic,IIS-HttpCompressionStatic,IIS-HttpErrors,IIS-HttpLogging,IIS-HttpRedirect,IIS-HttpTracing,IIS-IISCertificateMappingAuthentication,IIS-IPSecurity,IIS-ISAPIExtensions,IIS-ISAPIFilter,IIS-LoggingLibraries,IIS-ManagementConsole,IIS-ManagementScriptingTools,IIS-ManagementService,IIS-Metabase,IIS-Performance,IIS-RequestFiltering,IIS-RequestMonitor,IIS-Security,IIS-ServerSideIncludes,IIS-StaticContent,IIS-URLAuthorization,IIS-WebDAV,IIS-WebServer,IIS-WebServerManagementTools,IIS-WebServerRole,IIS-WindowsAuthentication,IIS-WMICompatibility,WAS-ConfigurationAPI,WAS-ProcessModel,WAS-WindowsActivationService,IIS-WebSockets,IIS-ApplicationInit,IIS-NetFxExtensibility45,IIS-ASPNET45,IIS-CertProvider
+ $exclueFeatures = "IIS-IIS6ManagementCompatibility".ToLower(),"IIS-ODBCLogging".ToLower(),"IIS-CGI".ToLower(),"IIS-LegacyScripts".ToLower(),"IIS-LegacySnapIn","IIS-ASP"
+ ForEach($featureName in Get-WindowsOptionalFeature –Online  | ? FeatureName -match "iis" | select FeatureName){
+     If($exclueFeatures -notcontains $featureName.FeatureName) {
+        Enable-WindowsOptionalFeature -Online -FeatureName $featureName.FeatureName -All;
+     }
+ }
