@@ -1,0 +1,1 @@
+Dism /Online /Disable-Feature /FeatureName:IIS-WebServerRole
