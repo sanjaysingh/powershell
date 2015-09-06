@@ -21,11 +21,12 @@ exit
 $exclueFeatures = "IIS-IIS6ManagementCompatibility".ToLower(),"IIS-ODBCLogging".ToLower(),"IIS-CGI".ToLower(),"IIS-LegacyScripts".ToLower(),"IIS-LegacySnapIn","IIS-ASP"
 
 $features = DISM.exe /ONLINE /Get-Features /FORMAT:List | Where-Object { $_.StartsWith("Feature Name")}
-$iisFeatureArgs = "";
+
 ForEach ($feature in $features) {
     $featureName = $feature.split(":")[1].trim();
     If(($featureName -match "iis") -and ($exclueFeatures -notcontains $featureName)) {
-        $iisFeatureArgs = $iisFeatureArgs + " /FeatureName:" + $featureName;
+        Write-Host "Enabling feature $featureName"
+        DISM /NoRestart /OnLine /Enable-Feature:$featureName /All 
     }
 }
-start-process -NoNewWindow "DISM.exe" "/NoRestart /OnLine /Enable-Feature $iisFeatureArgs"
+

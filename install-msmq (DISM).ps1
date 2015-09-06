@@ -18,13 +18,13 @@ exit
 }
 
 $features = DISM.exe /ONLINE /Get-Features /FORMAT:List | Where-Object { $_.StartsWith("Feature Name")}
-$msmqFeatureArgs = "";
+
 ForEach ($feature in $features) {
     $featureName = $feature.split(":")[1].trim();
     If($featureName -match "msmq") {
-        $msmqFeatureArgs = $msmqFeatureArgs + " /FeatureName:" + $featureName;
+        Write-Host "Enabling feature $featureName"
+        DISM /NoRestart /OnLine /Enable-Feature:$featureName /All 
     }
 }
 
-start-process -NoNewWindow "DISM.exe" "/NoRestart /OnLine /Enable-Feature $msmqFeatureArgs"
 
